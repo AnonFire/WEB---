@@ -64,16 +64,17 @@ class BaseNe:
         cursor.execute('''CREATE TABLE IF NOT EXISTS news
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                          user_name VARCHAR(50),
-                         password_hash VARCHAR(128)
+                         password_hash VARCHAR(128),
+                         user_id VARCHAR(50)
                          )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, title, text):
+    def insert(self, title, text, id):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO news
-                      (user_name, password_hash)
-                      VALUES (?,?)''', (title, text))
+                      (user_name, password_hash, user_id)
+                      VALUES (?,?,?)''', (title, text, id))
         cursor.close()
         self.connection.commit()
 
@@ -88,10 +89,3 @@ class BaseNe:
         cursor.execute("SELECT * FROM news")
         rows = cursor.fetchall()
         return rows
-
-    def exists(self, title, text):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM news WHERE title = ? AND text = ?",
-                    (title, text))
-        row = cursor.fetchone()
-        return (True, row[0]) if row else (False,)
